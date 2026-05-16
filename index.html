@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1220" />
+  <meta name="description" content="Penetration test results from CI/CD pipelines, offline-ready PWA." />
+  <title>Pentest Pipeline Dashboard</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icons/icon.svg" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo" aria-hidden="true"></span>
+      <div>
+        <h1>Pentest Pipeline</h1>
+        <p class="muted small" id="lastSyncLabel">Loading…</p>
+      </div>
+    </div>
+    <div class="actions">
+      <span id="netStatus" class="badge net"><span class="dot"></span><span class="label">online</span></span>
+      <button id="notifyBtn" class="btn ghost" type="button" title="Enable notifications">
+        <span class="ico">🔔</span><span class="hide-sm">Notify</span>
+      </button>
+      <button id="simulateBtn" class="btn ghost" type="button" title="Simulate a push event">
+        <span class="ico">⚡</span><span class="hide-sm">Test push</span>
+      </button>
+      <button id="refreshBtn" class="btn ghost" type="button" title="Refresh latest report">
+        <span class="ico">↻</span><span class="hide-sm">Refresh</span>
+      </button>
+      <button id="installBtn" class="btn primary hidden" type="button" title="Install app">
+        <span class="ico">⤓</span><span class="hide-sm">Install</span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section id="summary" class="grid summary">
+      <article class="card kpi crit"><h2>Critical</h2><p id="kpiCrit">–</p></article>
+      <article class="card kpi high"><h2>High</h2><p id="kpiHigh">–</p></article>
+      <article class="card kpi med"><h2>Medium</h2><p id="kpiMed">–</p></article>
+      <article class="card kpi low"><h2>Low</h2><p id="kpiLow">–</p></article>
+      <article class="card kpi pipe">
+        <h2>Pipeline</h2>
+        <p id="kpiPipe">–</p>
+        <span id="kpiPipeMeta" class="muted small"></span>
+      </article>
+    </section>
+
+    <section class="panel">
+      <header class="panel-head">
+        <h2>Stages</h2>
+        <span class="muted small" id="stagesMeta"></span>
+      </header>
+      <div id="stages" class="grid stages"></div>
+    </section>
+
+    <section class="panel">
+      <header class="panel-head">
+        <h2>Findings</h2>
+        <div class="filters" role="tablist" aria-label="Severity filter">
+          <button class="chip active" data-filter="all" type="button">All</button>
+          <button class="chip" data-filter="critical" type="button">Critical</button>
+          <button class="chip" data-filter="high" type="button">High</button>
+          <button class="chip" data-filter="medium" type="button">Medium</button>
+          <button class="chip" data-filter="low" type="button">Low</button>
+        </div>
+      </header>
+      <ul id="findings" class="findings"></ul>
+      <p id="findingsEmpty" class="muted small empty hidden">No findings match this filter.</p>
+    </section>
+
+    <section class="panel">
+      <header class="panel-head">
+        <h2>History</h2>
+        <span class="muted small">Stored locally in IndexedDB</span>
+      </header>
+      <ul id="history" class="history"></ul>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span class="muted small">PWA · service worker · IndexedDB · Push API</span>
+  </footer>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js" defer></script>
+</body>
+</html>

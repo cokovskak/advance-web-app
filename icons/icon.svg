@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Pentest Pipeline">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1220"/>
+      <stop offset="1" stop-color="#172238"/>
+    </linearGradient>
+    <linearGradient id="shield" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5b9dff"/>
+      <stop offset="1" stop-color="#3a82ee"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
+  <path d="M256 80 L416 136 V256 C416 352 344 416 256 440 C168 416 96 352 96 256 V136 Z"
+        fill="url(#shield)" stroke="#7ab8ff" stroke-width="6"/>
+  <g fill="none" stroke="#0b1220" stroke-width="18" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M176 260 L232 316 L344 200"/>
+  </g>
+  <circle cx="372" cy="148" r="22" fill="#ff4d6d" stroke="#0b1220" stroke-width="6"/>
+</svg>

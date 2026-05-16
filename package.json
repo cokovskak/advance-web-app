@@ -1,0 +1,16 @@
+{
+  "name": "pentest-pipeline-pwa",
+  "version": "1.0.0",
+  "private": true,
+  "description": "PWA dashboard for pentest pipeline reports, with push notifications and offline storage.",
+  "scripts": {
+    "start": "node server.js",
+    "gen-keys": "node scripts/generate-vapid.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "web-push": "^3.6.7"
+  }
+}

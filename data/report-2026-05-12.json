@@ -1,0 +1,27 @@
+{
+  "id": "run-2026-05-12-39",
+  "timestamp": 1747051200000,
+  "pipeline": {
+    "workflow": "pentest.yml",
+    "runNumber": 39,
+    "commit": "9f8e7d6",
+    "branch": "main",
+    "status": "success",
+    "url": "https://github.com/example/repo/actions/runs/39"
+  },
+  "target": "https://staging.example.com",
+  "stages": [
+    { "name": "Nmap",      "status": "success", "findings": 2, "durationMs":  40500 },
+    { "name": "OWASP ZAP", "status": "success", "findings": 2, "durationMs": 296700 },
+    { "name": "Trivy",     "status": "success", "findings": 1, "durationMs":  58000 },
+    { "name": "Nikto",     "status": "success", "findings": 1, "durationMs":  95300 }
+  ],
+  "findings": [
+    { "tool": "Trivy",     "severity": "medium", "title": "CVE-2025-1234 in libcurl", "description": "Out-of-bounds read in libcurl < 8.7.0.", "target": "image: app:latest" },
+    { "tool": "OWASP ZAP", "severity": "medium", "title": "Missing CSRF token on form",  "description": "/account/update accepts POST without anti-CSRF token.", "target": "POST /account/update" },
+    { "tool": "OWASP ZAP", "severity": "low",    "title": "Content-Type-Options not set", "description": "X-Content-Type-Options: nosniff header is missing.", "target": "GET /" },
+    { "tool": "Nikto",     "severity": "low",    "title": "Missing X-Frame-Options header", "description": "Click-jacking protection header not set.", "target": "GET /" },
+    { "tool": "Nmap",      "severity": "low",    "title": "Port 22 (SSH) open", "description": "OpenSSH 8.9p1; consider restricting source IPs.", "target": "tcp/22" },
+    { "tool": "Nmap",      "severity": "low",    "title": "Port 80 (HTTP) open", "description": "Plaintext HTTP exposed alongside HTTPS.", "target": "tcp/80" }
+  ]
+}
