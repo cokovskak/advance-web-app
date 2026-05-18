@@ -110,6 +110,8 @@ main { padding: 18px; display: grid; gap: 18px; max-width: 1200px; margin: 0 aut
 }
 .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
 .panel-head h2 { font-size: 14px; margin: 0; letter-spacing: .3px; }
+.panel { min-height: 220px; }
+.panel:has(.history) { min-height: 120px; }
 
 .filters { display: flex; gap: 6px; flex-wrap: wrap; }
 .chip {
