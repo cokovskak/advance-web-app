@@ -152,6 +152,8 @@ main { padding: 18px; display: grid; gap: 18px; max-width: 1200px; margin: 0 aut
 .finding.high .sev     { color: var(--high); background: rgba(255,138,60,.08); }
 .finding.medium .sev   { color: var(--med);  background: rgba(255,200,87,.08); }
 .finding.low .sev      { color: var(--low);  background: rgba(110,231,183,.08); }
+.finding.truncated-note { background: rgba(110,231,183,.04); border-style: dashed; }
+.finding.truncated-note .sev { color: var(--muted); background: transparent; border-color: var(--muted); }
 .finding .title { font-weight: 600; font-size: 14px; }
 .finding .desc  { color: var(--muted); font-size: 12px; margin-top: 2px; line-height: 1.4; }
 .finding .tool  { font-size: 11px; color: var(--muted); padding: 4px 8px; border: 1px solid var(--border); border-radius: 999px; white-space: nowrap; }

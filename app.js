@@ -139,10 +139,22 @@ function fmtTime(ts) {
 }
 
 function renderSummary(report, source) {
+  // Prefer the authoritative per-severity totals from the report (the
+  // pipeline may have truncated the findings array to fit the backend's
+  // body cap). Fall back to counting findings for older reports that
+  // don't include totalsBySeverity.
+  const totals = report.totalsBySeverity || null;
   const counts = { critical: 0, high: 0, medium: 0, low: 0 };
-  for (const f of report.findings || []) {
-    const sev = (f.severity || "").toLowerCase();
-    if (sev in counts) counts[sev]++;
+  if (totals) {
+    counts.critical = totals.critical || 0;
+    counts.high     = totals.high     || 0;
+    counts.medium   = totals.medium   || 0;
+    counts.low      = totals.low      || 0;
+  } else {
+    for (const f of report.findings || []) {
+      const sev = (f.severity || "").toLowerCase();
+      if (sev in counts) counts[sev]++;
+    }
   }
   setText("#kpiCrit", counts.critical);
   setText("#kpiHigh", counts.high);
@@ -196,6 +208,24 @@ function renderFindings(report) {
     return;
   }
   empty.classList.add("hidden");
+
+  // If the pipeline truncated the findings array to fit the backend's
+  // body cap, surface that to the user — the full set lives in the GitHub
+  // Actions artifact.
+  if (report.findingsTruncated && currentFilter === "all") {
+    const note = document.createElement("li");
+    note.className = "finding truncated-note";
+    note.innerHTML = `
+      <div class="sev">info</div>
+      <div>
+        <div class="title">Showing ${(report.findings || []).length} of ${report.findingsTotal} findings</div>
+        <div class="desc">Lower-severity findings were capped to keep the report under the backend's 1 MB limit. Full set available in the workflow run's artifact bundle.</div>
+      </div>
+      <span class="tool">pipeline</span>
+    `;
+    list.appendChild(note);
+  }
+
   for (const f of findings) {
     const sev = (f.severity || "low").toLowerCase();
     const li = document.createElement("li");
