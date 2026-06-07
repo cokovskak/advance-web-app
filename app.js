@@ -240,7 +240,7 @@ function renderFindings(report) {
 
   // Display order: most findings first (Trivy tends to dominate; user can
   // collapse it). Within each group, severity-sorted.
-  const toolOrder = ["OWASP ZAP", "Trivy", "Nmap", "Nikto"];
+  const toolOrder = ["API Probe", "OWASP ZAP", "Kiterunner", "Trivy", "Nmap", "Nikto"];
   const tools = [...byTool.keys()].sort((a, b) => {
     const ai = toolOrder.indexOf(a), bi = toolOrder.indexOf(b);
     return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
