@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#0b1220" />
   <meta name="description" content="Penetration test results from CI/CD pipelines, offline-ready PWA." />
-  <title>Pentest Pipeline Dashboard</title>
+  <title>Pentesting Dashboard</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="icons/icon.svg" />
@@ -16,7 +16,7 @@
     <div class="brand">
       <span class="logo" aria-hidden="true"></span>
       <div>
-        <h1>Pentest Pipeline</h1>
+        <h1>Pentesting Dashboard</h1>
         <p class="muted small" id="lastSyncLabel">Loading…</p>
       </div>
     </div>
@@ -24,9 +24,6 @@
       <span id="netStatus" class="badge net"><span class="dot"></span><span class="label">online</span></span>
       <button id="notifyBtn" class="btn ghost" type="button" title="Enable notifications">
         <span class="ico">🔔</span><span class="hide-sm">Notify</span>
-      </button>
-      <button id="simulateBtn" class="btn ghost" type="button" title="Simulate a push event">
-        <span class="ico">⚡</span><span class="hide-sm">Test push</span>
       </button>
       <button id="refreshBtn" class="btn ghost" type="button" title="Refresh latest report">
         <span class="ico">↻</span><span class="hide-sm">Refresh</span>

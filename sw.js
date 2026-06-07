@@ -4,7 +4,7 @@
 //   - Cache-first for shell, network-first for /data/*.json with cache fallback
 //   - Handle push events and a "simulate-push" postMessage so dev/testing works without a server
 
-const VERSION = "v1.1.0";
+const VERSION = "v1.2.0";
 const SHELL_CACHE = `shell-${VERSION}`;
 const DATA_CACHE  = `data-${VERSION}`;
 

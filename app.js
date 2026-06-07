@@ -192,26 +192,26 @@ function renderStages(report) {
   }
 }
 
+// Tracks "Load more" state per tool so re-renders preserve user expansion.
+const PAGE_SIZE = 15;
+let toolPageState = {};
+
 function renderFindings(report) {
   const list = $("#findings");
   const empty = $("#findingsEmpty");
   list.innerHTML = "";
-  const findings = (report.findings || []).filter(f =>
+
+  const filtered = (report.findings || []).filter(f =>
     currentFilter === "all" ? true : (f.severity || "").toLowerCase() === currentFilter
   );
-  // Stable severity sort
-  const order = { critical: 0, high: 1, medium: 2, low: 3 };
-  findings.sort((a, b) => (order[a.severity?.toLowerCase()] ?? 9) - (order[b.severity?.toLowerCase()] ?? 9));
 
-  if (!findings.length) {
+  if (!filtered.length) {
     empty.classList.remove("hidden");
     return;
   }
   empty.classList.add("hidden");
 
-  // If the pipeline truncated the findings array to fit the backend's
-  // body cap, surface that to the user — the full set lives in the GitHub
-  // Actions artifact.
+  // Truncation note (pipeline capped findings to fit backend body limit)
   if (report.findingsTruncated && currentFilter === "all") {
     const note = document.createElement("li");
     note.className = "finding truncated-note";
@@ -219,26 +219,90 @@ function renderFindings(report) {
       <div class="sev">info</div>
       <div>
         <div class="title">Showing ${(report.findings || []).length} of ${report.findingsTotal} findings</div>
-        <div class="desc">Lower-severity findings were capped to keep the report under the backend's 1 MB limit. Full set available in the workflow run's artifact bundle.</div>
+        <div class="desc">Lower-severity findings were capped to fit the report under the backend's body limit. Full set available in the workflow run's artifact bundle.</div>
       </div>
       <span class="tool">pipeline</span>
     `;
     list.appendChild(note);
   }
 
-  for (const f of findings) {
-    const sev = (f.severity || "low").toLowerCase();
-    const li = document.createElement("li");
-    li.className = `finding ${sev}`;
-    li.innerHTML = `
-      <div class="sev">${sev}</div>
-      <div>
-        <div class="title">${escapeHtml(f.title || "Untitled finding")}</div>
-        <div class="desc">${escapeHtml(f.description || "")}${f.target ? ` · <span class="muted">${escapeHtml(f.target)}</span>` : ""}</div>
-      </div>
-      <span class="tool">${escapeHtml(f.tool || "unknown")}</span>
+  // Group by tool, sort each group by severity
+  const sevOrder = { critical: 0, high: 1, medium: 2, low: 3 };
+  const byTool = new Map();
+  for (const f of filtered) {
+    const tool = f.tool || "unknown";
+    if (!byTool.has(tool)) byTool.set(tool, []);
+    byTool.get(tool).push(f);
+  }
+  for (const arr of byTool.values()) {
+    arr.sort((a, b) => (sevOrder[a.severity?.toLowerCase()] ?? 9) - (sevOrder[b.severity?.toLowerCase()] ?? 9));
+  }
+
+  // Display order: most findings first (Trivy tends to dominate; user can
+  // collapse it). Within each group, severity-sorted.
+  const toolOrder = ["OWASP ZAP", "Trivy", "Nmap", "Nikto"];
+  const tools = [...byTool.keys()].sort((a, b) => {
+    const ai = toolOrder.indexOf(a), bi = toolOrder.indexOf(b);
+    return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+  });
+
+  for (const tool of tools) {
+    const items = byTool.get(tool);
+    const pageKey = `${tool}|${currentFilter}`;
+    const shown = toolPageState[pageKey] || PAGE_SIZE;
+
+    // Group header (collapsible)
+    const group = document.createElement("li");
+    group.className = "tool-group";
+    const collapsed = group.dataset.collapsed === "true";
+    group.innerHTML = `
+      <button class="tool-group-head" type="button" aria-expanded="true">
+        <span class="caret">▾</span>
+        <span class="tool-name">${escapeHtml(tool)}</span>
+        <span class="tool-count">${items.length} finding${items.length === 1 ? "" : "s"}</span>
+      </button>
+      <ul class="tool-findings"></ul>
     `;
-    list.appendChild(li);
+    const headBtn = group.querySelector(".tool-group-head");
+    const sublist = group.querySelector(".tool-findings");
+
+    const renderRows = () => {
+      sublist.innerHTML = "";
+      const visible = items.slice(0, shown);
+      for (const f of visible) {
+        const sev = (f.severity || "low").toLowerCase();
+        const li = document.createElement("li");
+        li.className = `finding ${sev}`;
+        li.innerHTML = `
+          <div class="sev">${sev}</div>
+          <div>
+            <div class="title">${escapeHtml(f.title || "Untitled finding")}</div>
+            <div class="desc">${escapeHtml(f.description || "")}${f.target ? ` · <span class="muted">${escapeHtml(f.target)}</span>` : ""}</div>
+          </div>
+          <span class="tool">${escapeHtml(f.tool || "unknown")}</span>
+        `;
+        sublist.appendChild(li);
+      }
+      if (items.length > visible.length) {
+        const more = document.createElement("li");
+        more.className = "load-more";
+        more.innerHTML = `<button type="button">Load ${Math.min(PAGE_SIZE, items.length - visible.length)} more · ${items.length - visible.length} remaining</button>`;
+        more.querySelector("button").addEventListener("click", () => {
+          toolPageState[pageKey] = (toolPageState[pageKey] || PAGE_SIZE) + PAGE_SIZE;
+          renderRows();
+        });
+        sublist.appendChild(more);
+      }
+    };
+    renderRows();
+
+    headBtn.addEventListener("click", () => {
+      const isCollapsed = group.classList.toggle("collapsed");
+      headBtn.setAttribute("aria-expanded", String(!isCollapsed));
+      headBtn.querySelector(".caret").textContent = isCollapsed ? "▸" : "▾";
+    });
+
+    list.appendChild(group);
   }
 }
 
@@ -401,26 +465,6 @@ async function requestNotifyPermission() {
   await subscribeToPush();
 }
 
-async function simulatePush() {
-  // Send a "push" through the service worker so the same code path runs as a real push.
-  const reg = await navigator.serviceWorker.ready;
-  if (!reg.active) {
-    toast("Service worker not active yet");
-    return;
-  }
-  const payload = pickSimulatedPayload();
-  reg.active.postMessage({ type: "simulate-push", payload });
-}
-
-function pickSimulatedPayload() {
-  const options = [
-    { title: "Critical vulnerability detected", body: "OWASP ZAP found SQL injection on /api/login", tag: "critical" },
-    { title: "Pipeline failed", body: "Stage 'Trivy' failed — see report for details", tag: "pipeline" },
-    { title: "New scan completed", body: "Nmap + ZAP + Trivy + Nikto · 12 findings", tag: "scan" }
-  ];
-  return options[Math.floor(Math.random() * options.length)];
-}
-
 // -------- Init --------
 
 async function loadAndRender({ preferNetwork = false } = {}) {
@@ -447,13 +491,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   $("#refreshBtn").addEventListener("click", () => loadAndRender({ preferNetwork: true }));
   $("#notifyBtn").addEventListener("click", requestNotifyPermission);
-  $("#simulateBtn").addEventListener("click", simulatePush);
 
   for (const chip of document.querySelectorAll(".chip")) {
     chip.addEventListener("click", () => {
       document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
       chip.classList.add("active");
       currentFilter = chip.dataset.filter;
+      toolPageState = {}; // reset paging when severity filter changes
       if (currentReport) renderFindings(currentReport);
     });
   }

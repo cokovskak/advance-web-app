@@ -154,6 +154,29 @@ main { padding: 18px; display: grid; gap: 18px; max-width: 1200px; margin: 0 aut
 .finding.low .sev      { color: var(--low);  background: rgba(110,231,183,.08); }
 .finding.truncated-note { background: rgba(110,231,183,.04); border-style: dashed; }
 .finding.truncated-note .sev { color: var(--muted); background: transparent; border-color: var(--muted); }
+
+/* Tool group (collapsible section per tool) */
+.tool-group { list-style: none; margin: 16px 0 0; }
+.tool-group:first-of-type { margin-top: 0; }
+.tool-group-head {
+  width: 100%; display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px; margin-bottom: 8px;
+  background: transparent; border: 1px solid var(--border); border-radius: 8px;
+  color: inherit; font: inherit; cursor: pointer; text-align: left;
+}
+.tool-group-head:hover { background: rgba(255,255,255,0.02); }
+.tool-group-head .caret { color: var(--muted); font-size: 12px; width: 12px; }
+.tool-group-head .tool-name { font-weight: 600; font-size: 14px; }
+.tool-group-head .tool-count { color: var(--muted); font-size: 12px; margin-left: auto; }
+.tool-group.collapsed .tool-findings { display: none; }
+.tool-findings { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.load-more { list-style: none; padding: 4px 0; }
+.load-more button {
+  width: 100%; padding: 10px; background: transparent;
+  border: 1px dashed var(--border); border-radius: 8px;
+  color: var(--muted); font: inherit; cursor: pointer;
+}
+.load-more button:hover { background: rgba(255,255,255,0.03); color: inherit; }
 .finding .title { font-weight: 600; font-size: 14px; }
 .finding .desc  { color: var(--muted); font-size: 12px; margin-top: 2px; line-height: 1.4; }
 .finding .tool  { font-size: 11px; color: var(--muted); padding: 4px 8px; border: 1px solid var(--border); border-radius: 999px; white-space: nowrap; }

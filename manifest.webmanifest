@@ -1,6 +1,6 @@
 {
-  "name": "Pentest Pipeline Dashboard",
-  "short_name": "PentestPWA",
+  "name": "Pentesting Dashboard",
+  "short_name": "Pentesting",
   "description": "Penetration test results from CI/CD pipelines, offline-ready.",
   "start_url": "./index.html",
   "scope": "./",
